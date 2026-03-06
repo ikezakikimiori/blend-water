@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>薬品調合ゲーム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="game-container">
+    <div class="header">
+        <div class="target-label">【目標の分量】</div>
+        <div id="target-value">0</div>
+    </div>
+    
+    <div class="main-beaker-area">
+        <div class="beaker large">
+            <div class="reflection"></div>
+            <div class="marks large-marks"></div>
+            <div id="main-liquid" class="liquid main-liquid"></div>
+            <div id="current-sum">0</div>
+        </div>
+    </div>
+
+    <div class="message" id="message">目標の分量になるようにビーカーも液体を入れて</div>
+    
+    <div class="shelf" id="shelf">
+        </div>
+
+    <button class="btn-reset" onclick="initGame()">最初から調合する</button>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+:root {
+    --bg-dark: #dcf8fc;
+    --wood-shelf: #5495a7;
+    --text-gold: #ffeb3b;
+    --text-normal: #f6f5ed;
+    --glass-reflection: rgba(255, 255, 255, 0.4);
+    --beaker-border: rgba(255, 255, 255, 0.656);
+    --main-liquid-color: rgba(255, 255, 255, 0.2); /* 最初は薄い色 */
+}
+
+body { 
+    font-family: 'Hiragino Mincho ProN', serif; 
+    text-align: center; 
+    background-color: var(--bg-dark); 
+    color: var(--text-normal); 
+    margin: 0; padding: 20px;
+}
+
+#game-container { 
+    max-width: 500px; 
+    margin: 10px auto; 
+    padding: 20px 30px; 
+    background: #7bc7ce; 
+    border: 10px double #436872;
+    border-radius: 8px;
+    box-shadow: 0 10px 50px rgba(119, 119, 119, 0.8);
+}
+
+#target-value { 
+    font-size: 42px; 
+    color: var(--text-gold); 
+    font-weight: bold; 
+    text-shadow: 0 0 15px rgba(255,235,59,0.6); 
+}
+
+/* メインビーカーエリア */
+.main-beaker-area {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+/* ビーカー共通設定 */
+.beaker {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--beaker-border);
+    border-top: none;
+    border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+    position: relative; overflow: hidden;
+}
+
+/* 中央の大きなビーカー */
+.beaker.large {
+    width: 140px; height: 180px;
+    border-width: 3px;
+    box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+}
+
+.liquid {
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 0%;
+    transition: height 0.6s ease-out, background-color 0.5s;
+    z-index: 2;
+}
+
+.main-liquid {
+    background-color: var(--main-liquid-color);
+}
+
+/* 液面 */
+.liquid::after {
+    content: ""; position: absolute; top: -4px; left: 0; width: 100%; height: 8px;
+    background: rgba(255,255,255,0.4); border-radius: 50%;
+}
+
+#current-sum { 
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 54px; color: #fff; font-weight: bold; z-index: 10;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+/* 目盛り */
+.marks {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(to bottom, transparent 94%, rgba(255,255,255,0.2) 94%);
+    z-index: 3;
+}
+.large-marks { background-size: 100% calc(100% / 10); } /* 目安として10分割 */
+
+.reflection {
+    position: absolute; top: 10%; left: 10%; width: 8px; height: 75%;
+    background: var(--glass-reflection); border-radius: 10px; z-index: 4; filter: blur(1px);
+}
+
+/* 棚と素材ビーカー */
+.shelf { 
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; 
+    padding: 20px; background: var(--wood-shelf); border-radius: 5px;
+    box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.beaker-container { position: relative; cursor: pointer; transition: transform 0.1s; }
+.beaker.small { width: 70px; height: 95px; margin: 0 auto; }
+.small-marks { background-size: 100% calc(100% / 15); }
+
+.number-label {
+    position: absolute; bottom: -25px; left: 0; width: 100%;
+    font-size: 18px; font-weight: bold; color: var(--text-normal);
+}
+
+.used { cursor: default; filter: brightness(0.3); transition: 0.5s; }
+.used .liquid { height: 0% !important; }
+
+.btn-reset { 
+    margin-top: 40px; 
+    padding: 12px 30px; 
+    font-size: 18px; 
+    background: #458793; 
+    color: #fff; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-family: inherit;
+    box-shadow: 0 5px 0 #2a535a;
+    transition: all 0.05s;
+    position: relative;
+    outline: none;
+}
+
+/* ★ボタンを押し込んだ（クリックした）時の動作 */
+.btn-reset:active { 
+    transform: translateY(3px); 
+    box-shadow: 0 2px 0 #2a535a;
+}
+
+/* 成功時の画面フラッシュ */
+.success-flash {
+    animation: flash-animation 0.5s ease-out;
+}
+
+@keyframes flash-animation {
+    0% { background-color: rgba(255, 235, 59, 0.5); }
+    100% { background-color: transparent; }
+}
+
+/* 成功したビーカーを光らせる */
+.win-glow {
+    box-shadow: 0 0 30px #ffeb3b !important;
+    border-color: #ffeb3b !important;
+    transition: all 0.3s;
+}
+
+/* キラキラ粒子のスタイル */
+.particle {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    z-index: 100;
+    border-radius: 50%;
+}
