@@ -97,6 +97,7 @@ body {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 16px; 
     padding: 40px 20px; background: var(--wood-shelf); border-radius: 5px;
     box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
+    margin-bottom: 10px;
 }
 
 .beaker-container { position: relative; cursor: pointer; transition: transform 0.1s; }
@@ -112,7 +113,7 @@ body {
 .used .liquid { height: 0% !important; }
 
 .btn-reset { 
-    margin-top: 10px; 
+    /* margin-top: 10px;  */
     padding: 12px 30px; 
     font-size: 18px; 
     background: #458793; 
