@@ -1,11 +1,10 @@
 :root {
-    --bg-dark: #dcf8fc;
-    --wood-shelf: #5495a7;
+    --bg-dark: #1a0f0d;
+    --wood-shelf: #3e2723;
     --text-gold: #ffeb3b;
-    --text-normal: #f6f5ed;
+    --text-normal: #f0e68c;
     --glass-reflection: rgba(255, 255, 255, 0.4);
-    --beaker-border: rgba(255, 255, 255, 0.656);
-    --main-liquid-color: rgba(255, 255, 255, 0.2); /* 最初は薄い色 */
+    --beaker-border: rgba(255, 255, 255, 0.5);
 }
 
 body { 
@@ -13,47 +12,97 @@ body {
     text-align: center; 
     background-color: var(--bg-dark); 
     color: var(--text-normal); 
-    margin: 0; padding: 20px;
+    margin: 0; padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; 
 }
 
 #game-container { 
-    max-width: 320px; 
-    margin: 10px auto; 
-    padding: 16px 14px; 
-    background: #7bc7ce; 
-    border: 10px double #436872;
+    width: 100%; /* 320px以下では画面いっぱいにする */
+    max-width: 500px; 
+    height: 98vh; 
+    margin: auto; 
+    padding: 1vh 10px; /* パディングを少し削って横幅を確保 */
+    background: #4e342e; 
+    border: 6px double #2c1e1a; /* ボーダーを少し細く */
     border-radius: 8px;
-    box-shadow: 0 10px 50px rgba(119, 119, 119, 0.8);
+    box-shadow: 0 10px 50px rgba(0,0,0,0.8);
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    align-items: center;
+    box-sizing: border-box;
 }
 
-#target-value { 
-    font-size: 40px; 
-    color: var(--text-gold); 
-    font-weight: bold; 
-    text-shadow: 0 0 15px rgba(255,235,59,0.6); 
-}
+/* ヘッダー */
+.header { margin-top: 0.5vh; }
+.target-label { font-size: 12px; } /* 小さな画面用に縮小 */
+#target-value { font-size: 6vh; color: var(--text-gold); font-weight: bold; line-height: 1; }
 
-/* メインビーカーエリア */
-.main-beaker-area {
-    margin: 10px 0;
-    display: flex;
-    justify-content: center;
-}
-
-/* ビーカー共通設定 */
+/* メインビーカー（釜） */
 .beaker {
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid var(--beaker-border);
     border-top: none;
-    border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
     position: relative; overflow: hidden;
 }
 
-/* 中央の大きなビーカー */
 .beaker.large {
-    width: 90px; height: 100px;
-    border-width: 3px;
-    box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+    width: 35%; /* 横幅を％指定にして可変に */
+    min-width: 100px;
+    height: 25vh; 
+    border-bottom-left-radius: 15px; 
+    border-bottom-right-radius: 15px;
+}
+
+/* 数字の表示 */
+#current-sum, .number-label { 
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff; font-weight: bold; z-index: 10;
+    text-shadow: 2px 2px 5px rgba(0,0,0,1);
+    pointer-events: none;
+}
+#current-sum { font-size: 5vh; }
+.number-label { font-size: 3vh; }
+
+.message { font-size: 12px; margin: 0.5vh 0; padding: 0 5px; }
+
+/* ★棚のレイアウト修正（320px以下対応） */
+.shelf { 
+    width: 100%;
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    justify-items: center; 
+    align-items: center; 
+    gap: 10px; /* 極端に狭い画面ではgapを20pxから10pxへ自動調整するように変更可 */
+    padding: 10px 5px; 
+    background: var(--wood-shelf); 
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* 画面幅が300px以上の時だけgapを広げる */
+@media (min-width: 320px) {
+    .shelf { gap: 20px; }
+}
+
+.beaker-container { 
+    position: relative; 
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.beaker.small {
+    width: 100%; 
+    max-width: 70px; /* 最大サイズを制限 */
+    height: 12vh; 
+    border-bottom-left-radius: 8px; 
+    border-bottom-right-radius: 8px;
 }
 
 .liquid {
@@ -62,101 +111,30 @@ body {
     z-index: 2;
 }
 
-.main-liquid {
-    background-color: var(--main-liquid-color);
-}
-
-/* 液面 */
-.liquid::after {
-    content: ""; position: absolute; top: -4px; left: 0; width: 100%; height: 8px;
-    background: rgba(255,255,255,0.4); border-radius: 50%;
-}
-
-#current-sum { 
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 48px; color: #fff; font-weight: bold; z-index: 10;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-}
-
-/* 目盛り */
-.marks {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-image: linear-gradient(to bottom, transparent 94%, rgba(255,255,255,0.2) 94%);
-    z-index: 3;
-}
-.large-marks { background-size: 100% calc(100% / 10); } /* 目安として10分割 */
-
-.reflection {
-    position: absolute; top: 10%; left: 10%; width: 8px; height: 75%;
-    background: var(--glass-reflection); border-radius: 10px; z-index: 4; filter: blur(1px);
-}
-
-/* 棚と素材ビーカー */
-.shelf { 
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 16px; 
-    padding: 40px 20px; background: var(--wood-shelf); border-radius: 5px;
-    box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
-    margin-bottom: 10px;
-}
-
-.beaker-container { position: relative; cursor: pointer; transition: transform 0.1s; }
-.beaker.small { width: 40px; height: 50px; margin: 0 auto; }
-.small-marks { background-size: 100% calc(100% / 15); }
-
-.number-label {
-    position: absolute; bottom: -25px; left: 0; width: 100%;
-    font-size: 16px; font-weight: bold; color: var(--text-normal);
-}
-
-.used { cursor: default; filter: brightness(0.3); transition: 0.5s; }
-.used .liquid { height: 0% !important; }
-
+/* ボタン */
 .btn-reset { 
-    /* margin-top: 10px;  */
-    padding: 12px 30px; 
-    font-size: 18px; 
-    background: #458793; 
+    margin-bottom: 1vh;
+    padding: 1.5vh 20px; 
+    font-size: 1.8vh; 
+    width: 80%; /* ボタンも幅に合わせて可変 */
+    max-width: 250px;
+    background: #8d6e63; 
     color: #fff; 
     border: none; 
-    border-radius: 4px; 
-    cursor: pointer; 
-    font-family: inherit;
-    box-shadow: 0 5px 0 #2a535a;
-    transition: all 0.05s;
-    position: relative;
+    border-radius: 50px; 
+    cursor: pointer;
+    box-shadow: 0 4px 0 #2c1e1a; 
+    transition: all 0.05s; 
     outline: none;
 }
+.btn-reset:active { transform: translateY(4px); box-shadow: 0 0px 0 #2c1e1a; }
 
-/* ★ボタンを押し込んだ（クリックした）時の動作 */
-.btn-reset:active { 
-    transform: translateY(3px); 
-    box-shadow: 0 2px 0 #2a535a;
+/* エフェクト */
+.win-glow { box-shadow: 0 0 30px #ffeb3b !important; border-color: #ffeb3b !important; }
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
 }
-
-/* 成功時の画面フラッシュ */
-.success-flash {
-    animation: flash-animation 0.5s ease-out;
-}
-
-@keyframes flash-animation {
-    0% { background-color: rgba(255, 235, 59, 0.5); }
-    100% { background-color: transparent; }
-}
-
-/* 成功したビーカーを光らせる */
-.win-glow {
-    box-shadow: 0 0 30px #ffeb3b !important;
-    border-color: #ffeb3b !important;
-    transition: all 0.3s;
-}
-
-/* キラキラ粒子のスタイル */
-.particle {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    pointer-events: none;
-    z-index: 100;
-    border-radius: 50%;
-}
+.success-flash { animation: flash 0.5s ease-out; }
+.particle { position: fixed; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; z-index: 100; }
