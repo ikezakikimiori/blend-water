@@ -17,9 +17,9 @@ body {
 }
 
 #game-container { 
-    max-width: 500px; 
+    max-width: 360px; 
     margin: 10px auto; 
-    padding: 20px 30px; 
+    padding: 16px 16px; 
     background: #7bc7ce; 
     border: 10px double #436872;
     border-radius: 8px;
@@ -27,7 +27,7 @@ body {
 }
 
 #target-value { 
-    font-size: 42px; 
+    font-size: 40px; 
     color: var(--text-gold); 
     font-weight: bold; 
     text-shadow: 0 0 15px rgba(255,235,59,0.6); 
@@ -35,7 +35,7 @@ body {
 
 /* メインビーカーエリア */
 .main-beaker-area {
-    margin: 20px 0;
+    margin: 10px 0;
     display: flex;
     justify-content: center;
 }
@@ -51,7 +51,7 @@ body {
 
 /* 中央の大きなビーカー */
 .beaker.large {
-    width: 140px; height: 180px;
+    width: 100px; height: 120px;
     border-width: 3px;
     box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
 }
@@ -95,7 +95,7 @@ body {
 /* 棚と素材ビーカー */
 .shelf { 
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; 
-    padding: 20px; background: var(--wood-shelf); border-radius: 5px;
+    padding: 40px 20px; background: var(--wood-shelf); border-radius: 5px;
     box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
 }
 
@@ -112,7 +112,7 @@ body {
 .used .liquid { height: 0% !important; }
 
 .btn-reset { 
-    margin-top: 40px; 
+    margin-top: 10px; 
     padding: 12px 30px; 
     font-size: 18px; 
     background: #458793; 
