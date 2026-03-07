@@ -5,6 +5,7 @@
     --text-normal: #f0e68c;
     --glass-reflection: rgba(255, 255, 255, 0.4);
     --beaker-border: rgba(255, 255, 255, 0.5);
+    --main-liquid-color: rgba(255, 255, 255, 0.1);
 }
 
 body { 
@@ -12,97 +13,51 @@ body {
     text-align: center; 
     background-color: var(--bg-dark); 
     color: var(--text-normal); 
-    margin: 0; padding: 0;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden; 
+    margin: 0; padding: 20px;
 }
 
 #game-container { 
-    width: 100%; /* 320px以下では画面いっぱいにする */
     max-width: 500px; 
-    height: 98vh; 
-    margin: auto; 
-    padding: 1vh 10px; /* パディングを少し削って横幅を確保 */
+    margin: 10px auto; 
+    padding: 8px 16px; 
     background: #4e342e; 
-    border: 6px double #2c1e1a; /* ボーダーを少し細く */
+    border: 1px double #2c1e1a;
     border-radius: 8px;
     box-shadow: 0 10px 50px rgba(0,0,0,0.8);
-    display: flex; 
-    flex-direction: column; 
-    justify-content: space-between; 
-    align-items: center;
-    box-sizing: border-box;
 }
 
-/* ヘッダー */
-.header { margin-top: 0.5vh; }
-.target-label { font-size: 12px; } /* 小さな画面用に縮小 */
-#target-value { font-size: 6vh; color: var(--text-gold); font-weight: bold; line-height: 1; }
+#target-value { 
+    font-size: 42px; 
+    color: var(--text-gold); 
+    font-weight: bold; 
+    text-shadow: 0 0 15px rgba(255,235,59,0.6); 
+}
 
-/* メインビーカー（釜） */
+.main-beaker-area {
+    margin: 10px 0 16px 0;
+    display: flex;
+    justify-content: center;
+}
+
 .beaker {
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid var(--beaker-border);
     border-top: none;
-    position: relative; overflow: hidden;
+    position: relative; 
+    overflow: hidden;
 }
 
 .beaker.large {
-    width: 35%; /* 横幅を％指定にして可変に */
-    min-width: 100px;
-    height: 25vh; 
-    border-bottom-left-radius: 15px; 
-    border-bottom-right-radius: 15px;
-}
-
-/* 数字の表示 */
-#current-sum, .number-label { 
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    color: #fff; font-weight: bold; z-index: 10;
-    text-shadow: 2px 2px 5px rgba(0,0,0,1);
-    pointer-events: none;
-}
-#current-sum { font-size: 5vh; }
-.number-label { font-size: 3vh; }
-
-.message { font-size: 12px; margin: 0.5vh 0; padding: 0 5px; }
-
-/* ★棚のレイアウト修正（320px以下対応） */
-.shelf { 
-    width: 100%;
-    display: grid; 
-    grid-template-columns: repeat(3, 1fr); 
-    justify-items: center; 
-    align-items: center; 
-    gap: 10px; /* 極端に狭い画面ではgapを20pxから10pxへ自動調整するように変更可 */
-    padding: 10px 5px; 
-    background: var(--wood-shelf); 
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-/* 画面幅が300px以上の時だけgapを広げる */
-@media (min-width: 320px) {
-    .shelf { gap: 20px; }
-}
-
-.beaker-container { 
-    position: relative; 
-    width: 100%;
-    display: flex;
-    justify-content: center;
+    width: 100px; height: 120px;
+    border-width: 3px;
+    border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;
+    box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
 }
 
 .beaker.small {
-    width: 100%; 
-    max-width: 70px; /* 最大サイズを制限 */
-    height: 12vh; 
-    border-bottom-left-radius: 8px; 
-    border-bottom-right-radius: 8px;
+    width: 40px; height: 64px;
+    border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
+    margin: 0 auto;
 }
 
 .liquid {
@@ -111,30 +66,52 @@ body {
     z-index: 2;
 }
 
-/* ボタン */
-.btn-reset { 
-    margin-bottom: 1vh;
-    padding: 1.5vh 20px; 
-    font-size: 1.8vh; 
-    width: 80%; /* ボタンも幅に合わせて可変 */
-    max-width: 250px;
-    background: #8d6e63; 
-    color: #fff; 
-    border: none; 
-    border-radius: 50px; 
-    cursor: pointer;
-    box-shadow: 0 4px 0 #2c1e1a; 
-    transition: all 0.05s; 
-    outline: none;
-}
-.btn-reset:active { transform: translateY(4px); box-shadow: 0 0px 0 #2c1e1a; }
+.main-liquid { background-color: var(--main-liquid-color); }
 
-/* エフェクト */
-.win-glow { box-shadow: 0 0 30px #ffeb3b !important; border-color: #ffeb3b !important; }
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-3px); }
-    75% { transform: translateX(3px); }
+.liquid::after {
+    content: ""; position: absolute; top: -4px; left: 0; width: 100%; height: 8px;
+    background: rgba(255,255,255,0.4); border-radius: 50%;
 }
-.success-flash { animation: flash 0.5s ease-out; }
-.particle { position: fixed; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; z-index: 100; }
+
+#current-sum { 
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 54px; color: #fff; font-weight: bold; z-index: 10;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+.marks {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(to bottom, transparent 94%, rgba(255,255,255,0.2) 94%);
+    z-index: 3;
+}
+.large-marks { background-size: 100% calc(100% / 10); }
+.small-marks { background-size: 100% calc(100% / 15); }
+
+.reflection {
+    position: absolute; top: 10%; left: 10%; width: 8px; height: 75%;
+    background: var(--glass-reflection); border-radius: 10px; z-index: 4; filter: blur(1px);
+}
+
+.shelf { 
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px 15px; 
+    padding: 20px; background: var(--wood-shelf); border-radius: 5px;
+    box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);margin-bottom: 10px;
+}
+
+.beaker-container { position: relative; cursor: pointer; transition: transform 0.1s; }
+.beaker-container:not(.used):hover { transform: scale(1.05); }
+
+.number-label {
+    margin-top: 8px;
+    font-size: 18px; font-weight: bold; color: var(--text-normal);
+}
+
+.used { cursor: default; filter: brightness(0.3); transition: 0.5s; }
+.used .liquid { height: 0% !important; }
+
+.btn-reset { 
+    padding: 12px 30px; font-size: 18px; 
+    background: #8d6e63; color: #fff; border: none; border-radius: 4px; 
+    cursor: pointer;
+}
