@@ -1,6 +1,6 @@
 :root {
-    --bg-dark: #1a0f0d;
-    --wood-shelf: #3e2723;
+    --bg-dark: #ffffff;
+    --wood-shelf: #0bae96;
     --text-gold: #ffeb3b;
     --text-normal: #f0e68c;
     --glass-reflection: rgba(255, 255, 255, 0.4);
@@ -8,33 +8,38 @@
     --main-liquid-color: rgba(255, 255, 255, 0.1);
 }
 
+/* 全要素のサイズ計算を固定し、レイアウト崩れを防ぐ */
+* {
+    box-sizing: border-box;
+}
+
 body { 
     font-family: 'Hiragino Mincho ProN', serif; 
     text-align: center; 
     background-color: var(--bg-dark); 
     color: var(--text-normal); 
-    margin: 0; padding: 20px;
+    margin: 0; 
 }
 
 #game-container { 
     max-width: 500px; 
-    margin: 10px auto; 
+    margin: 4px auto; 
     padding: 8px 16px; 
-    background: #4e342e; 
-    border: 1px double #2c1e1a;
+    background: #4cb4ad; 
+    border: 1px double #518197;
     border-radius: 8px;
     box-shadow: 0 10px 50px rgba(0,0,0,0.8);
 }
 
 #target-value { 
-    font-size: 42px; 
+    font-size: 36px; 
     color: var(--text-gold); 
     font-weight: bold; 
     text-shadow: 0 0 15px rgba(255,235,59,0.6); 
 }
 
 .main-beaker-area {
-    margin: 10px 0 16px 0;
+    margin: 8px 0;
     display: flex;
     justify-content: center;
 }
@@ -45,13 +50,21 @@ body {
     border-top: none;
     position: relative; 
     overflow: hidden;
+    /* transitionで枠線の色変化を滑らかに */
+    transition: border-color 0.5s, box-shadow 0.5s;
 }
 
 .beaker.large {
-    width: 100px; height: 120px;
+    width: 80px; height: 90px;
     border-width: 3px;
     border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;
     box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+}
+
+/* 成功時のエフェクト：!importantを使わず詳細度で対応 */
+.beaker.large.win-glow {
+    border-color: var(--text-gold);
+    box-shadow: 0 0 30px var(--text-gold), inset 0 0 20px var(--text-gold);
 }
 
 .beaker.small {
@@ -68,11 +81,6 @@ body {
 
 .main-liquid { background-color: var(--main-liquid-color); }
 
-.liquid::after {
-    content: ""; position: absolute; top: -4px; left: 0; width: 100%; height: 8px;
-    background: rgba(255,255,255,0.4); border-radius: 50%;
-}
-
 #current-sum { 
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
@@ -80,6 +88,75 @@ body {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 }
 
+/* メッセージエリアの高さを固定（ガタつき防止の肝） */
+.message {
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+.shelf { 
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 15px; 
+    padding: 20px 10px; background: var(--wood-shelf); border-radius: 5px;
+    box-shadow: inset 0 10px 20px rgba(0,0,0,0.5); margin-bottom: 10px;
+}
+
+.beaker-container { position: relative; cursor: pointer; transition: transform 0.1; }
+.beaker-container:not(.used):hover { transform: scale(1.05); }
+
+.used { cursor: default; filter: brightness(0.3); transition: 0.5s; }
+
+/* .btn-reset { 
+    padding: 12px 30px; font-size: 18px; 
+    background: #0bae96; color: #fff; border: none; border-radius: 4px; 
+    cursor: pointer;
+} */
+
+.btn-reset { 
+    padding: 12px 30px; 
+    font-size: 18px; 
+    font-weight: bold;
+    background: #0bae96; 
+    color: #fff; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer;
+    
+    /* ボタンの「厚み」を表現する影 */
+    box-shadow: 0 4px 0 #088574; 
+    
+    /* アニメーションを滑らかにする設定 */
+    transition: all 0.1s;
+    position: relative;
+    top: 0;
+}
+
+/* ホバー時（マウスが乗った時）のわずかな変化 */
+.btn-reset:hover {
+    background: #0dbfa6;
+}
+
+/* クリックした瞬間の「押し込み」アニメーション */
+.btn-reset:active {
+    /* 影を小さくして、位置を下にずらすことで「押し込んだ」ように見せる */
+    box-shadow: 0 1px 0 #088574;
+    top: 3px; 
+}
+
+.particle {
+    position: fixed;
+    width: 8px; height: 8px; border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+}
+
+/* その他の装飾用共通パーツは以前のまま維持 */
+.reflection {
+    position: absolute; top: 10%; left: 10%; width: 8px; height: 75%;
+    background: var(--glass-reflection); border-radius: 10px; z-index: 4; filter: blur(1px);
+}
 .marks {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-image: linear-gradient(to bottom, transparent 94%, rgba(255,255,255,0.2) 94%);
@@ -87,31 +164,4 @@ body {
 }
 .large-marks { background-size: 100% calc(100% / 10); }
 .small-marks { background-size: 100% calc(100% / 15); }
-
-.reflection {
-    position: absolute; top: 10%; left: 10%; width: 8px; height: 75%;
-    background: var(--glass-reflection); border-radius: 10px; z-index: 4; filter: blur(1px);
-}
-
-.shelf { 
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px 15px; 
-    padding: 20px; background: var(--wood-shelf); border-radius: 5px;
-    box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);margin-bottom: 10px;
-}
-
-.beaker-container { position: relative; cursor: pointer; transition: transform 0.1s; }
-.beaker-container:not(.used):hover { transform: scale(1.05); }
-
-.number-label {
-    margin-top: 8px;
-    font-size: 18px; font-weight: bold; color: var(--text-normal);
-}
-
-.used { cursor: default; filter: brightness(0.3); transition: 0.5s; }
-.used .liquid { height: 0% !important; }
-
-.btn-reset { 
-    padding: 12px 30px; font-size: 18px; 
-    background: #8d6e63; color: #fff; border: none; border-radius: 4px; 
-    cursor: pointer;
-}
+.number-label { margin-top: 8px; font-size: 18px; font-weight: bold; color: var(--text-normal); }

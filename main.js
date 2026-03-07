@@ -11,27 +11,28 @@ function initGame() {
     
     const mainLiq = document.getElementById('main-liquid');
     const mainBeaker = document.querySelector('.beaker.large');
+    const msg = document.getElementById('message');
+    const shelf = document.getElementById('shelf');
     
-    // メインビーカーの状態を完全に初期化（洗浄）
+    // メインビーカーの状態リセット
     if (mainLiq) {
         mainLiq.style.height = "0%";
-        mainLiq.style.backgroundColor = "rgba(255, 255, 255, 0.1)"; // 透明に戻す
-        mainLiq.style.filter = "none"; // 失敗時の濁り(filter)を解除
+        mainLiq.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+        mainLiq.style.filter = "none";
     }
     
-    // 成功時の黄金の輝きと失敗時の揺れアニメーションを解除
+    // 成功時のクラスを削除
     if (mainBeaker) {
         mainBeaker.classList.remove('win-glow');
-        mainBeaker.style.animation = "none"; 
     }
     
     updateSumDisplay("#fff");
     
-    const msg = document.getElementById('message');
-    msg.innerText = "目標の分量になるようにビーカーも液体を入れて";
+    // メッセージの初期化
+    msg.innerText = "目標の分量になるようにビーカーの液体を入れて";
     msg.style.color = "#f0e68c";
     
-    const shelf = document.getElementById('shelf');
+    // 棚の初期化
     shelf.innerHTML = "";
     const nums = [];
     
@@ -55,6 +56,7 @@ function initGame() {
         
         shelf.appendChild(container);
 
+        // 少し遅れて液体が満たされる演出
         setTimeout(() => {
             const liq = container.querySelector('.liquid');
             if(liq) liq.style.height = h + '%';
@@ -67,6 +69,7 @@ function initGame() {
         };
     }
 
+    // 目標値の決定（必ず合計で作れる数値にする）
     const shuffled = [...nums].sort(() => 0.5 - Math.random());
     target = shuffled.slice(0, 3 + Math.floor(Math.random() * 2)).reduce((a, b) => a + b, 0);
     document.getElementById('target-value').innerText = target;
@@ -78,9 +81,9 @@ function initGame() {
 function addNumber(n, color, element) {
     current += n;
     element.classList.add('used');
-    element.querySelector('.liquid').style.height = '0%';
     
     const mainLiq = document.getElementById('main-liquid');
+    // 目標値に対する割合で高さを決定（100%を超えないように制御）
     const fillPercent = Math.min((current / target) * 100, 100);
     
     if (mainLiq) {
@@ -97,7 +100,6 @@ function addNumber(n, color, element) {
  */
 function checkStatus() {
     const msg = document.getElementById('message');
-    const container = document.getElementById('game-container');
     const mainBeaker = document.querySelector('.beaker.large');
     const mainLiq = document.getElementById('main-liquid');
     const gold = "#ffeb3b";
@@ -107,10 +109,9 @@ function checkStatus() {
         msg.style.color = gold;
         updateSumDisplay(gold);
 
-        container.classList.add('success-flash');
-        setTimeout(() => container.classList.remove('success-flash'), 500);
-
+        // CSS側の .win-glow クラスで光らせる
         if (mainBeaker) mainBeaker.classList.add('win-glow');
+        
         createParticles();
         freezeGame();
 
@@ -120,21 +121,16 @@ function checkStatus() {
         updateSumDisplay("#ff5252");
         
         if (mainLiq) {
-            mainLiq.style.height = "105%";
-            mainLiq.style.backgroundColor = "#4b0082"; // 失敗の色
-            mainLiq.style.filter = "contrast(1.5) brightness(0.5)"; // 濁り
+            mainLiq.style.height = "100%";
+            mainLiq.style.backgroundColor = "#4b0082"; // 失敗の色（濁った紫）
+            mainLiq.style.filter = "contrast(1.2) brightness(0.7)"; 
         }
-
-        if (mainBeaker) {
-            mainBeaker.style.animation = "shake 0.1s infinite";
-        }
-        
         freezeGame();
     }
 }
 
 /**
- * 紙吹雪（キラキラ）を生成
+ * 成功時の紙吹雪演出
  */
 function createParticles() {
     const colors = ['#ffeb3b', '#ffffff', '#ff9800', '#f44336', '#e91e63'];
@@ -179,7 +175,7 @@ function createParticles() {
 }
 
 /**
- * 合計数字の表示更新
+ * 中央の合計数字の表示更新
  */
 function updateSumDisplay(color) {
     const sumDisplay = document.getElementById('current-sum');
@@ -190,7 +186,7 @@ function updateSumDisplay(color) {
 }
 
 /**
- * ゲーム終了時の操作禁止処理
+ * ゲーム終了時にクリックを無効化
  */
 function freezeGame() {
     document.querySelectorAll('.beaker-container').forEach(c => c.classList.add('used'));
